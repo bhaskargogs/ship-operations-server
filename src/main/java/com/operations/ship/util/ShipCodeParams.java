@@ -12,16 +12,14 @@ public class ShipCodeParams {
     private static final String SHIP_CODE_REGEX = "^[a-zA-Z]{4}-\\d{4}-[a-zA-Z]{1}\\d{1}";
 
     public static boolean validateCode(String code) {
-        boolean isValid = false;
-
         if (StringUtils.isNotBlank(code)) {
             Pattern pattern = Pattern.compile(SHIP_CODE_REGEX);
             Matcher matcher = pattern.matcher(code);
 
-            isValid = matcher.matches();
+            return matcher.matches();
         }
 
-        return isValid;
+        return false;
     }
 
 }
