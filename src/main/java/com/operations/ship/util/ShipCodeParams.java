@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ShipCodeParams {
     public static final String INVALID_SHIP_CODE_MSG = "Ship Code [%s] is invalid";
-    private static final String SHIP_CODE_REGEX = "^[a-zA-Z]{4}-\\d{4}-[a-zA-Z]{1}\\d{1}";
+    private static final String SHIP_CODE_REGEX = "^[A-Z]{4}-\\d{4}-[A-Z]{1}\\d{1}";
 
     public static boolean validateCode(String code) {
         if (StringUtils.isNotBlank(code)) {
