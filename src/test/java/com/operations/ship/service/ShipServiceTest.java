@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ShipServiceTest {
@@ -80,5 +80,18 @@ public class ShipServiceTest {
     public void testFindAllSortByName_ReturnNull() {
         when(service.findAll(1, 1, "ASC", "name")).thenReturn(null);
         assertNull(service.findAll(1, 1, "ASC", "name"));
+    }
+
+    @Test
+    public void testDelete_DeletesSuccessfully(){
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        service.delete(1L);
+        verify(service, times(1)).delete(1L);
+    }
+
+    @Test
+    public void testDelete_ThrowException() {
+        doThrow(ShipNotFoundException.class).when(service).delete(1L);
+        assertThrows(ShipNotFoundException.class, () -> service.delete(1L));
     }
 }

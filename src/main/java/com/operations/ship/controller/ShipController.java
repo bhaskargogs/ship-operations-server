@@ -49,6 +49,11 @@ public class ShipController {
         return new ResponseEntity<>(shipLists, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+
     @PostMapping
     public ResponseEntity<ShipDTO> create(@Valid @RequestBody ShipCreationDTO shipCreationDTO) {
         ShipDTO shipDTO = ShipCreationDTO.makeShipDTO(shipCreationDTO);

@@ -70,10 +70,19 @@ public class ShipService {
         try {
             insertedShip = shipRepository.save(mapper.map(shipDTO, Ship.class));
         } catch (InvalidShipException ex) {
-            log.error("InvalidShipException while creating Ship: {}", shipDTO, ex);
-            throw new InvalidShipException(ex.getMessage());
+            throw new InvalidShipException("InvalidShipException while creating Ship: " + shipDTO);
         }
         return mapper.map(insertedShip, ShipDTO.class);
+    }
+
+    @Transactional
+    public void delete(Long id) throws ShipNotFoundException {
+        try {
+            shipRepository.delete(ShipService.findById(shipRepository, id));
+        } catch (ShipNotFoundException ex) {
+            throw new ShipNotFoundException("ShipNotFoundException while deleting Ship of id: {}", id.toString());
+        }
+
     }
 
     private static Ship findById(ShipRepository repository, Long id) {

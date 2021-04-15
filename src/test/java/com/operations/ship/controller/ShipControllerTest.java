@@ -44,6 +44,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ShipController.class)
@@ -148,4 +149,16 @@ public class ShipControllerTest {
         assertTrue(StringUtils.isBlank(result.getResponse().getContentAsString()));
     }
 
+    @Test
+    public void testDelete_Returns200() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/ships/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    }
+    @Test
+    public void testDelete_Returns404() throws Exception {
+        doThrow(new ShipNotFoundException("id", String.valueOf(1L))).when(shipController).delete(1L);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/ships/1"))
+                .andExpect(status().isNotFound());
+    }
 }
