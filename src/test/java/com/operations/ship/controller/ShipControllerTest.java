@@ -17,13 +17,16 @@
 
 package com.operations.ship.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.operations.ship.dto.ShipCreationDTO;
 import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.exception.InvalidShipException;
+import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,10 +38,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -54,7 +58,7 @@ public class ShipControllerTest {
 
     @Test
     public void testCreate_returns201() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", LocalDateTime.now(), LocalDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(shipController.create(any(ShipCreationDTO.class))).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.CREATED));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
@@ -70,14 +74,78 @@ public class ShipControllerTest {
 
     @Test
     public void testCreate_returns400() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "ABC-011-A1", LocalDateTime.now(), LocalDateTime.now());
-        doThrow(InvalidShipException.class).when(shipController).create(any(ShipCreationDTO.class));
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "ABC-011-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(shipController.create(any(ShipCreationDTO.class))).thenThrow(InvalidShipException.class);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+                .accept(MediaType.APPLICATION_JSON)
+                .content(JsonMapper.objectToJson(shipDTO))).andReturn();
         int status = result.getResponse().getStatus();
         assertEquals(400, status);
+        verify(shipController).create((any(ShipCreationDTO.class)));
+    }
+
+    @Test
+    public void testFindById_returns200() throws Exception {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(shipController.findById(1L)).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.OK));
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(200, status);
+        verify(shipController).findById(1L);
+        String content = result.getResponse().getContentAsString();
+        assertNotNull(JsonMapper.mapFromJson(content, ShipDTO.class));
+    }
+
+    @Test
+    public void testFindById_returns404() throws Exception {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(shipController.findById(2L)).thenThrow(ShipNotFoundException.class);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(404, status);
+        verify(shipController).findById(2L);
+    }
+
+    @Test
+    public void testFindAllSortByName_Returns200Result() throws Exception {
+        List<ShipDTO> ships = new ArrayList<>();
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
+        when(shipController.findAllSorted(1, 1, "ASC", "name")).thenReturn(new ResponseEntity<>(ships, HttpStatus.OK));
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("pageNo", "1")
+                .param("pageSize", "1")
+                .param("sort", "name")).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(200, status);
+        verify(shipController).findAllSorted(1, 1, "ASC", "name");
+        List<ShipDTO> actual = JsonMapper.mapListFromJson(result.getResponse().getContentAsString(), new TypeReference<List<ShipDTO>>() {
+        });
+        assertEquals(actual, ships);
+    }
+
+    @Test
+    public void testFindAllSortByName_Returns200Null() throws Exception {
+        when(shipController.findAllSorted(1, 1, "ASC", "name")).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("pageNo", "1")
+                .param("pageSize", "1")
+                .param("sort", "name")).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(200, status);
+        verify(shipController).findAllSorted(1, 1, "ASC", "name");
+        assertTrue(StringUtils.isBlank(result.getResponse().getContentAsString()));
     }
 
 }

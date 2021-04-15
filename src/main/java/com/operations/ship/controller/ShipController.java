@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ships")
@@ -33,6 +34,20 @@ public class ShipController {
 
     @Autowired
     private ShipService service;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ShipDTO> findById(@PathVariable Long id) {
+        return new ResponseEntity<>(service.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ShipDTO>> findAllSorted(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+                                                       @RequestParam(name = "direction", defaultValue = "ASC") String direction,
+                                                       @RequestParam(name = "sort", defaultValue = "id") String sort) {
+        List<ShipDTO> shipLists = service.findAll(pageNo, pageSize, direction, sort);
+        return new ResponseEntity<>(shipLists, HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<ShipDTO> create(@Valid @RequestBody ShipCreationDTO shipCreationDTO) {

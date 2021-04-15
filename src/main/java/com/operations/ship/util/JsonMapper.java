@@ -19,11 +19,13 @@ package com.operations.ship.util;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.reflect.TypeToken;
+import com.operations.ship.dto.ShipDTO;
 import io.cucumber.messages.internal.com.google.gson.Gson;
 
 import java.io.IOException;
@@ -57,5 +59,13 @@ public class JsonMapper {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper.readValue(json, clazz);
+    }
+
+    public static <T> T mapListFromJson(String json, TypeReference<List<ShipDTO>> clazz)
+            throws JsonParseException, JsonMappingException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return (T) objectMapper.readValue(json, clazz);
     }
 }

@@ -18,11 +18,10 @@
 package com.operations.ship.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @Entity
@@ -42,16 +41,16 @@ public class Ship implements Serializable {
     private String code;
 
     @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    private ZonedDateTime createdDate;
 
     @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
+    private ZonedDateTime updatedDate;
 
-    private Ship(){
+    private Ship() {
 
     }
 
-    public Ship(String name, double length, double width, String code, LocalDateTime createdDate, LocalDateTime updatedDate) {
+    public Ship(String name, double length, double width, String code, ZonedDateTime createdDate, ZonedDateTime updatedDate) {
         this.name = name;
         this.length = length;
         this.width = width;

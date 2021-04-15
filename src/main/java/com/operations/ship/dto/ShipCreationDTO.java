@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -45,10 +45,10 @@ public class ShipCreationDTO {
     private String code;
 
     @JsonIgnore
-    private final LocalDateTime createdDate = LocalDateTime.now();
+    private final ZonedDateTime createdDate = ZonedDateTime.now();
 
     @JsonIgnore
-    private final LocalDateTime updatedDate = LocalDateTime.now();
+    private final ZonedDateTime updatedDate = ZonedDateTime.now();
 
     public ShipCreationDTO(String name, double length, double width, String code) {
         this.name = name;
@@ -74,7 +74,7 @@ public class ShipCreationDTO {
     private static void validate(ShipCreationDTO request) {
         String code = request.getCode();
 
-        if(!ShipCodeParams.validateCode(code)) {
+        if (!ShipCodeParams.validateCode(code)) {
             throw new InvalidShipException(ShipCodeParams.INVALID_SHIP_CODE_MSG, code);
         }
     }

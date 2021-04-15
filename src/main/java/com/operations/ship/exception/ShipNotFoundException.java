@@ -15,27 +15,10 @@
  *
  */
 
-package com.operations.ship.dto;
+package com.operations.ship.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ShipDTO implements Serializable {
-
-    private Long id;
-    private String name;
-    private double length;
-    private double width;
-    private String code;
-    private ZonedDateTime createdDate;
-    private ZonedDateTime updatedDate;
-
-
+public class ShipNotFoundException extends RuntimeException {
+    public ShipNotFoundException(String fieldName, String value) {
+        super(String.format("EmergencyOutage Not Found by field=[%s], value=[%s]", fieldName, value));
+    }
 }

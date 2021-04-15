@@ -24,7 +24,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Configuration
 @Slf4j
@@ -35,8 +35,8 @@ public class DatabaseLoader {
         return (args -> {
             repository.deleteAll();
 
-            repository.save(new Ship("Illustria", 2154.24, 565.21, "AAAA-0021-A1", LocalDateTime.now(), LocalDateTime.now()));
-            repository.save(new Ship("Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", LocalDateTime.now(), LocalDateTime.now()));
+            repository.save(new Ship("Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
+            repository.save(new Ship("Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
 
             log.info("-------------------------");
             log.info("List of ships");

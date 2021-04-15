@@ -19,33 +19,65 @@ package com.operations.ship.service;
 
 import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.exception.InvalidShipException;
+import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.model.Ship;
 import com.operations.ship.repository.ShipRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ShipService {
 
     @Autowired
-    ShipRepository repository;
+    private ShipRepository shipRepository;
 
     @Autowired
     private ModelMapper mapper;
 
     @Transactional
+    public ShipDTO findById(Long id) {
+        return mapper.map(ShipService.findById(shipRepository, id), ShipDTO.class);
+    }
+
+    @Transactional
+    public List<ShipDTO> findAll(int pageNo, int pageSize, String direction, String fieldName) {
+        if (!direction.equals("ASC") && !direction.equals("DESC")) {
+            throw new InvalidShipException("Invalid Direction value: ", direction);
+        }
+        Pageable paging = PageRequest.of(pageNo, pageSize, (direction.equals("ASC")) ? Sort.by(fieldName).ascending() : Sort.by(fieldName).descending());
+        Page<Ship> ships = shipRepository.findAll(paging);
+        return (ships.hasContent()) ?
+                ships.getContent().stream()
+                        .map(ship -> mapper.map(ship, ShipDTO.class))
+                        .collect(Collectors.toList()) : new ArrayList<>();
+    }
+
+    @Transactional
     public ShipDTO create(ShipDTO shipDTO) throws InvalidShipException {
         Ship insertedShip = null;
         try {
-            insertedShip = repository.save(mapper.map(shipDTO, Ship.class));
+            insertedShip = shipRepository.save(mapper.map(shipDTO, Ship.class));
         } catch (InvalidShipException ex) {
             log.error("InvalidShipException while creating Ship: {}", shipDTO, ex);
             throw new InvalidShipException(ex.getMessage());
         }
         return mapper.map(insertedShip, ShipDTO.class);
+    }
+
+    private static Ship findById(ShipRepository repository, Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ShipNotFoundException("id", String.valueOf(id)));
     }
 }

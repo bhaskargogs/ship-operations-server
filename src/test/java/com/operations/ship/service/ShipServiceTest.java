@@ -20,15 +20,17 @@ package com.operations.ship.service;
 
 import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.exception.InvalidShipException;
+import com.operations.ship.exception.ShipNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,17 +41,44 @@ public class ShipServiceTest {
 
     @Test
     public void testCreate_ValidInput() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", LocalDateTime.now(), LocalDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(service.create(shipDTO)).thenReturn(shipDTO);
         assertEquals(shipDTO, service.create(shipDTO));
     }
 
     @Test
     public void testCreate_ThrowException() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "A123-0001-A1", LocalDateTime.now(), LocalDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "A123-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(service.create(shipDTO)).thenThrow(InvalidShipException.class);
         assertThrows(InvalidShipException.class, () -> service.create(shipDTO));
     }
 
+    @Test
+    public void testFindById_ValidInput() {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when((service.findById(1L))).thenReturn(shipDTO);
+        assertEquals(shipDTO, service.findById(1L));
+    }
 
+    @Test
+    public void testFindById_ThrowException() {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(service.findById(2L)).thenThrow(ShipNotFoundException.class);
+        assertThrows(ShipNotFoundException.class, () -> service.findById(2l));
+    }
+
+    @Test
+    public void testFindAllSortByName_ReturnsResult() {
+        List<ShipDTO> ships = new ArrayList<>();
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
+        when(service.findAll(1, 1, "ASC", "name")).thenReturn(ships);
+        assertEquals(ships, service.findAll(1, 1, "ASC", "name"));
+    }
+
+    @Test
+    public void testFindAllSortByName_ReturnNull() {
+        when(service.findAll(1, 1, "ASC", "name")).thenReturn(null);
+        assertNull(service.findAll(1, 1, "ASC", "name"));
+    }
 }
