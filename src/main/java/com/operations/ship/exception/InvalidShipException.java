@@ -15,16 +15,22 @@
  *
  */
 
-package com.operations.ship;
+package com.operations.ship.exception;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-@SpringBootTest
-class ShipOperationsServerApplicationTests {
+public class InvalidShipException extends RuntimeException {
 
-	@Test
-	void contextLoads() {
-	}
+    public InvalidShipException(String msg, String fieldName) {
+        String excString = String.format(msg, fieldName);
 
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, excString, this);
+    }
+
+    public InvalidShipException(String msg) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, msg, this);
+    }
 }

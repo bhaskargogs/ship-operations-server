@@ -15,16 +15,27 @@
  *
  */
 
-package com.operations.ship;
+package com.operations.ship.dto;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@SpringBootTest
-class ShipOperationsServerApplicationTests {
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-	@Test
-	void contextLoads() {
-	}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ShipDTO implements Serializable {
+
+    private Long id;
+    private String name;
+    private double length;
+    private double width;
+    private String code;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
+
 
 }
