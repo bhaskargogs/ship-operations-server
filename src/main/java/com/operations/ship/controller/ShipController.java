@@ -43,7 +43,7 @@ public class ShipController {
 
     @GetMapping
     public ResponseEntity<List<ShipDTO>> findAllSorted(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                                       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+                                                       @RequestParam(name = "pageSize", defaultValue = "50") int pageSize,
                                                        @RequestParam(name = "direction", defaultValue = "ASC") String direction,
                                                        @RequestParam(name = "sort", defaultValue = "id") String sort) {
         List<ShipDTO> shipLists = service.findAll(pageNo, pageSize, direction, sort);
