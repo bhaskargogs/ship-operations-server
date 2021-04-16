@@ -83,7 +83,7 @@ public class ShipServiceTest {
     }
 
     @Test
-    public void testDelete_DeletesSuccessfully(){
+    public void testDelete_DeletesSuccessfully() {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         service.delete(1L);
         verify(service, times(1)).delete(1L);
@@ -93,5 +93,19 @@ public class ShipServiceTest {
     public void testDelete_ThrowException() {
         doThrow(ShipNotFoundException.class).when(service).delete(1L);
         assertThrows(ShipNotFoundException.class, () -> service.delete(1L));
+    }
+
+    @Test
+    public void testUpdate_UpdateSuccessfully() {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(service.update(shipDTO, 1L)).thenReturn(shipDTO);
+        assertEquals(shipDTO, service.update(shipDTO, 1L));
+    }
+
+    @Test
+    public void testUpdate_ThrowException() {
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        when(service.update(shipDTO, 2L)).thenThrow(ShipNotFoundException.class);
+        assertThrows(ShipNotFoundException.class, () -> service.update(shipDTO, 2L));
     }
 }

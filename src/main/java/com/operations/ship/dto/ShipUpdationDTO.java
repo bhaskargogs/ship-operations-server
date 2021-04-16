@@ -18,8 +18,11 @@
 package com.operations.ship.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.operations.ship.exception.InvalidShipException;
+import com.operations.ship.util.ShipCodeParams;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
@@ -47,7 +50,7 @@ public class ShipUpdationDTO {
     private String code;
 
     @JsonIgnore
-    private final ZonedDateTime updated_time = ZonedDateTime.now();
+    private final ZonedDateTime updatedDate = ZonedDateTime.now();
 
     public ShipUpdationDTO(Long id, String name, double length, double width, String code) {
         this.id = id;
@@ -56,4 +59,26 @@ public class ShipUpdationDTO {
         this.width = width;
         this.code = code;
     }
+
+    public static ShipDTO makeShipDTO(ShipUpdationDTO requestDTO) {
+        ShipDTO shipDTO = new ShipDTO();
+        ShipUpdationDTO.validate(requestDTO);
+        shipDTO.setId(requestDTO.getId());
+        shipDTO.setName(requestDTO.getName());
+        shipDTO.setLength(requestDTO.getLength());
+        shipDTO.setWidth(requestDTO.getWidth());
+        if (StringUtils.isNotBlank(requestDTO.getCode())) {
+            shipDTO.setCode(requestDTO.getCode());
+        }
+        shipDTO.setUpdatedDate(requestDTO.getUpdatedDate());
+        return shipDTO;
+
+    }
+
+    private static void validate(ShipUpdationDTO requestDTO) {
+        if (!ShipCodeParams.validateCode(requestDTO.getCode())) {
+            throw new InvalidShipException(ShipCodeParams.INVALID_SHIP_CODE_MSG, requestDTO.getCode());
+        }
+    }
+
 }

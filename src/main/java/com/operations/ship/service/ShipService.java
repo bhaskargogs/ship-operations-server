@@ -23,6 +23,7 @@ import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.model.Ship;
 import com.operations.ship.repository.ShipRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -82,7 +83,24 @@ public class ShipService {
         } catch (ShipNotFoundException ex) {
             throw new ShipNotFoundException("ShipNotFoundException while deleting Ship of id: {}", id.toString());
         }
+    }
 
+    @Transactional
+    public ShipDTO update(ShipDTO updatedShipDTO, Long id) {
+        Ship shipToUpdate = ShipService.findById(shipRepository, id);
+        if (StringUtils.isNotBlank(updatedShipDTO.getName())) {
+            shipToUpdate.setName(updatedShipDTO.getName());
+        }
+        shipToUpdate.setLength(updatedShipDTO.getLength());
+        shipToUpdate.setWidth(updatedShipDTO.getWidth());
+        if (StringUtils.isNotBlank(updatedShipDTO.getCode())) {
+            shipToUpdate.setCode(shipToUpdate.getCode());
+        }
+        if (updatedShipDTO.getUpdatedDate() != null) {
+            shipToUpdate.setUpdatedDate(updatedShipDTO.getUpdatedDate());
+        }
+        shipRepository.save(shipToUpdate);
+        return mapper.map(shipToUpdate, ShipDTO.class);
     }
 
     private static Ship findById(ShipRepository repository, Long id) {

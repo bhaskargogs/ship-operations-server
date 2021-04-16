@@ -19,6 +19,7 @@ package com.operations.ship.controller;
 
 import com.operations.ship.dto.ShipCreationDTO;
 import com.operations.ship.dto.ShipDTO;
+import com.operations.ship.dto.ShipUpdationDTO;
 import com.operations.ship.service.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,10 +55,15 @@ public class ShipController {
         service.delete(id);
     }
 
-    @PostMapping
-    public ResponseEntity<ShipDTO> create(@Valid @RequestBody ShipCreationDTO shipCreationDTO) {
-        ShipDTO shipDTO = ShipCreationDTO.makeShipDTO(shipCreationDTO);
+    @PutMapping("{id}")
+    public ResponseEntity<ShipDTO> update(@Valid @RequestBody ShipUpdationDTO shipUpdationRequest, @PathVariable Long id) {
+        ShipDTO shipDTO = ShipUpdationDTO.makeShipDTO(shipUpdationRequest);
+        return new ResponseEntity<>(service.update(shipDTO, id), HttpStatus.OK);
+    }
 
+    @PostMapping
+    public ResponseEntity<ShipDTO> create(@Valid @RequestBody ShipCreationDTO shipCreationRequest) {
+        ShipDTO shipDTO = ShipCreationDTO.makeShipDTO(shipCreationRequest);
         return new ResponseEntity<ShipDTO>(service.create(shipDTO), HttpStatus.CREATED);
     }
 }
