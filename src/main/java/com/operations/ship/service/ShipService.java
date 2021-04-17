@@ -66,14 +66,14 @@ public class ShipService {
     }
 
     @Transactional
-    public ShipDTO create(ShipDTO shipDTO) throws InvalidShipException {
+    public String create(ShipDTO shipDTO) throws InvalidShipException {
         Ship insertedShip = null;
         try {
             insertedShip = shipRepository.save(mapper.map(shipDTO, Ship.class));
         } catch (InvalidShipException ex) {
             throw new InvalidShipException("InvalidShipException while creating Ship: " + shipDTO);
         }
-        return mapper.map(insertedShip, ShipDTO.class);
+        return "Successfully Created Ship with ID " + insertedShip.getId();
     }
 
     @Transactional

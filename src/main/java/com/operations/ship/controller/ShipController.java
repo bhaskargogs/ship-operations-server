@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/ships")
 public class ShipController {
@@ -62,8 +63,8 @@ public class ShipController {
     }
 
     @PostMapping
-    public ResponseEntity<ShipDTO> create(@Valid @RequestBody ShipCreationDTO shipCreationRequest) {
+    public ResponseEntity<String> create(@Valid @RequestBody ShipCreationDTO shipCreationRequest) {
         ShipDTO shipDTO = ShipCreationDTO.makeShipDTO(shipCreationRequest);
-        return new ResponseEntity<ShipDTO>(service.create(shipDTO), HttpStatus.CREATED);
+        return new ResponseEntity<String>(service.create(shipDTO), HttpStatus.CREATED);
     }
 }

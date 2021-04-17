@@ -42,8 +42,8 @@ public class ShipServiceTest {
     @Test
     public void testCreate_ValidInput() {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.create(shipDTO)).thenReturn(shipDTO);
-        assertEquals(shipDTO, service.create(shipDTO));
+        when(service.create(shipDTO)).thenReturn("Successfully created ship with Ship ID" + shipDTO.getId());
+        assertEquals("Successfully created ship with Ship ID" + shipDTO.getId(), service.create(shipDTO));
     }
 
     @Test

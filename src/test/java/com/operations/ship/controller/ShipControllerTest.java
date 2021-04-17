@@ -61,7 +61,7 @@ public class ShipControllerTest {
     @Test
     public void testCreate_returns201() throws Exception {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(shipController.create(any(ShipCreationDTO.class))).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.CREATED));
+        when(shipController.create(any(ShipCreationDTO.class))).thenReturn(new ResponseEntity<>("Successfully created Ship with Ship ID 1", HttpStatus.CREATED));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +71,7 @@ public class ShipControllerTest {
         assertEquals(201, status);
         verify(shipController).create((any(ShipCreationDTO.class)));
         String content = result.getResponse().getContentAsString();
-        assertNotNull(JsonMapper.mapFromJson(content, ShipDTO.class));
+        assertNotNull(content);
     }
 
     @Test
