@@ -167,7 +167,7 @@ public class ShipControllerTest {
     @Test
     public void testUpdate_Returns200() throws Exception {
         ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(shipController.update(any(ShipUpdationDTO.class), eq(1L))).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.OK));
+        when(shipController.update(any(ShipUpdationDTO.class), eq(1L))).thenReturn(new ResponseEntity<>("Ship with ID " + shipDTO.getId() + " updated successfully", HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/ships/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -176,7 +176,7 @@ public class ShipControllerTest {
         assertEquals(200, status);
         verify(shipController).update(any(ShipUpdationDTO.class), eq(1l));
         String content = result.getResponse().getContentAsString();
-        assertNotNull(JsonMapper.mapFromJson(content, ShipDTO.class));
+        assertNotNull(content);
     }
 
     @Test

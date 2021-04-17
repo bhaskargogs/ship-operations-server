@@ -98,8 +98,8 @@ public class ShipServiceTest {
     @Test
     public void testUpdate_UpdateSuccessfully() {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.update(shipDTO, 1L)).thenReturn(shipDTO);
-        assertEquals(shipDTO, service.update(shipDTO, 1L));
+        when(service.update(shipDTO, 1L)).thenReturn("Ship with ID " + shipDTO.getId() + " updated successfully");
+        assertEquals("Ship with ID " + shipDTO.getId() + " updated successfully", service.update(shipDTO, 1L));
     }
 
     @Test

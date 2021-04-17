@@ -86,7 +86,7 @@ public class ShipService {
     }
 
     @Transactional
-    public ShipDTO update(ShipDTO updatedShipDTO, Long id) {
+    public String update(ShipDTO updatedShipDTO, Long id) {
         Ship shipToUpdate = ShipService.findById(shipRepository, id);
         if (StringUtils.isNotBlank(updatedShipDTO.getName())) {
             shipToUpdate.setName(updatedShipDTO.getName());
@@ -100,7 +100,7 @@ public class ShipService {
             shipToUpdate.setUpdatedDate(updatedShipDTO.getUpdatedDate());
         }
         shipRepository.save(shipToUpdate);
-        return mapper.map(shipToUpdate, ShipDTO.class);
+        return "Ship with ID " + shipToUpdate.getId() + " updated successfully";
     }
 
     private static Ship findById(ShipRepository repository, Long id) {

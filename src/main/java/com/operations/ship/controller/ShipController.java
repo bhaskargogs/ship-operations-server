@@ -57,7 +57,7 @@ public class ShipController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ShipDTO> update(@Valid @RequestBody ShipUpdationDTO shipUpdationRequest, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Valid @RequestBody ShipUpdationDTO shipUpdationRequest, @PathVariable Long id) {
         ShipDTO shipDTO = ShipUpdationDTO.makeShipDTO(shipUpdationRequest);
         return new ResponseEntity<>(service.update(shipDTO, id), HttpStatus.OK);
     }
@@ -65,6 +65,6 @@ public class ShipController {
     @PostMapping
     public ResponseEntity<String> create(@Valid @RequestBody ShipCreationDTO shipCreationRequest) {
         ShipDTO shipDTO = ShipCreationDTO.makeShipDTO(shipCreationRequest);
-        return new ResponseEntity<String>(service.create(shipDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.create(shipDTO), HttpStatus.CREATED);
     }
 }
