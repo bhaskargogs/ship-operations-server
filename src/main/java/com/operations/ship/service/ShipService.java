@@ -94,7 +94,7 @@ public class ShipService {
         shipToUpdate.setLength(updatedShipDTO.getLength());
         shipToUpdate.setWidth(updatedShipDTO.getWidth());
         if (StringUtils.isNotBlank(updatedShipDTO.getCode())) {
-            shipToUpdate.setCode(shipToUpdate.getCode());
+            shipToUpdate.setCode(updatedShipDTO.getCode());
         }
         if (updatedShipDTO.getUpdatedDate() != null) {
             shipToUpdate.setUpdatedDate(updatedShipDTO.getUpdatedDate());
