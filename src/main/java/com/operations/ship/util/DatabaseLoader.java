@@ -33,8 +33,6 @@ public class DatabaseLoader {
     @Bean
     CommandLineRunner initShips(ShipRepository repository) {
         return (args -> {
-            repository.deleteAll();
-
             repository.save(new Ship("Illustria", 391.24, 65.21, "ABYI-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
             repository.save(new Ship("Seagallop", 354.24, 55.64, "UQYT-2124-B9", ZonedDateTime.parse("2020-12-17T10:14:54.785Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
             repository.save(new Ship("Konteri", 391.16, 51.67, "JUOQ-5789-S3", ZonedDateTime.parse("2020-06-20T21:52:02.578Z"), ZonedDateTime.parse("2020-06-20T21:52:02.578Z")));

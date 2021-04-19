@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 public class Ship implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private String name;
