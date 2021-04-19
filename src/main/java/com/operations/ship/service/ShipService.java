@@ -18,6 +18,7 @@
 package com.operations.ship.service;
 
 import com.operations.ship.dto.ShipDTO;
+import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.exception.InvalidShipException;
 import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.model.Ship;
@@ -34,7 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,16 +53,23 @@ public class ShipService {
     }
 
     @Transactional
-    public List<ShipDTO> findAll(int pageNo, int pageSize, String direction, String fieldName) {
-        if (!direction.equals("ASC") && !direction.equals("DESC")) {
+    public ShipResponseDTO findAll(int pageNo, int pageSize, String direction, String fieldName) {
+        if (!direction.equals("asc") && !direction.equals("desc")) {
             throw new InvalidShipException("Invalid Direction value: ", direction);
         }
-        Pageable paging = PageRequest.of(pageNo, pageSize, (direction.equals("ASC")) ? Sort.by(fieldName).ascending() : Sort.by(fieldName).descending());
+        Pageable paging = PageRequest.of(pageNo, pageSize, (direction.equals("asc")) ? Sort.by(fieldName).ascending() : Sort.by(fieldName).descending());
         Page<Ship> ships = shipRepository.findAll(paging);
-        return (ships.hasContent()) ?
-                ships.getContent().stream()
-                        .map(ship -> mapper.map(ship, ShipDTO.class))
-                        .collect(Collectors.toList()) : new ArrayList<>();
+        ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
+        if (ships.hasContent()) {
+            shipResponseDTO.setShips(ships.getContent().stream()
+                    .map(ship -> mapper.map(ship, ShipDTO.class))
+                    .collect(Collectors.toList()));
+            shipResponseDTO.setTotalShips(ships.getTotalElements());
+        } else {
+            shipResponseDTO.setShips(new ArrayList<>());
+            shipResponseDTO.setTotalShips(null);
+        }
+        return shipResponseDTO;
     }
 
     @Transactional

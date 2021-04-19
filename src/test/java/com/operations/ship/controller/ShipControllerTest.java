@@ -17,9 +17,9 @@
 
 package com.operations.ship.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.operations.ship.dto.ShipCreationDTO;
 import com.operations.ship.dto.ShipDTO;
+import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.dto.ShipUpdationDTO;
 import com.operations.ship.exception.InvalidShipException;
 import com.operations.ship.exception.ShipNotFoundException;
@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,9 +119,12 @@ public class ShipControllerTest {
     @Test
     public void testFindAllSortByName_Returns200Result() throws Exception {
         List<ShipDTO> ships = new ArrayList<>();
-        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
-        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
-        when(shipController.findAllSorted(1, 1, "ASC", "name")).thenReturn(new ResponseEntity<>(ships, HttpStatus.OK));
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2021-01-05T06:45:49.587Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2020-12-25T20:15:02.395Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
+        shipResponseDTO.setShips(ships);
+        shipResponseDTO.setTotalShips((long) ships.size());
+        when(shipController.findAllSorted(1, 1, "asc", "name")).thenReturn(new ResponseEntity<>(shipResponseDTO, HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -129,15 +133,15 @@ public class ShipControllerTest {
                 .param("sort", "name")).andReturn();
         int status = result.getResponse().getStatus();
         assertEquals(200, status);
-        verify(shipController).findAllSorted(1, 1, "ASC", "name");
-        assertNotNull(JsonMapper.mapListFromJson(result.getResponse().getContentAsString(), new TypeReference<List<ShipDTO>>() {
-        }));
-//        assertEquals(actual, ships);
+        verify(shipController).findAllSorted(1, 1, "asc", "name");
+        ShipResponseDTO actual = JsonMapper.mapFromJson(result.getResponse().getContentAsString(), ShipResponseDTO.class);
+        assertNotNull(JsonMapper.mapFromJson(result.getResponse().getContentAsString(), ShipResponseDTO.class));
+        assertEquals(actual.getShips(), ships);
     }
 
     @Test
     public void testFindAllSortByName_Returns200Null() throws Exception {
-        when(shipController.findAllSorted(1, 1, "ASC", "name")).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        when(shipController.findAllSorted(1, 1, "asc", "name")).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -146,7 +150,7 @@ public class ShipControllerTest {
                 .param("sort", "name")).andReturn();
         int status = result.getResponse().getStatus();
         assertEquals(200, status);
-        verify(shipController).findAllSorted(1, 1, "ASC", "name");
+        verify(shipController).findAllSorted(1, 1, "asc", "name");
         assertTrue(StringUtils.isBlank(result.getResponse().getContentAsString()));
     }
 

@@ -19,6 +19,7 @@ package com.operations.ship.service;
 
 
 import com.operations.ship.dto.ShipDTO;
+import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.exception.InvalidShipException;
 import com.operations.ship.exception.ShipNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -72,8 +73,11 @@ public class ShipServiceTest {
         List<ShipDTO> ships = new ArrayList<>();
         ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
         ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
-        when(service.findAll(1, 1, "ASC", "name")).thenReturn(ships);
-        assertEquals(ships, service.findAll(1, 1, "ASC", "name"));
+        ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
+        shipResponseDTO.setShips(ships);
+        shipResponseDTO.setTotalShips((long) ships.size());
+        when(service.findAll(1, 1, "ASC", "name")).thenReturn(shipResponseDTO);
+        assertEquals(shipResponseDTO, service.findAll(1, 1, "ASC", "name"));
     }
 
     @Test

@@ -19,6 +19,7 @@ package com.operations.ship.controller;
 
 import com.operations.ship.dto.ShipCreationDTO;
 import com.operations.ship.dto.ShipDTO;
+import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.dto.ShipUpdationDTO;
 import com.operations.ship.service.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,11 @@ public class ShipController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ShipDTO>> findAllSorted(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                                       @RequestParam(name = "pageSize", defaultValue = "50") int pageSize,
-                                                       @RequestParam(name = "direction", defaultValue = "ASC") String direction,
+    public ResponseEntity<ShipResponseDTO> findAllSorted(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                       @RequestParam(name = "pageSize", defaultValue = "20") int pageSize,
+                                                       @RequestParam(name = "direction", defaultValue = "asc") String direction,
                                                        @RequestParam(name = "sort", defaultValue = "id") String sort) {
-        List<ShipDTO> shipLists = service.findAll(pageNo, pageSize, direction, sort);
+        ShipResponseDTO shipLists = service.findAll(pageNo, pageSize, direction, sort);
         return new ResponseEntity<>(shipLists, HttpStatus.OK);
     }
 
