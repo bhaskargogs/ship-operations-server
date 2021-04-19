@@ -115,11 +115,17 @@ public class ShipService {
 
     @Transactional
     public List<ShipDTO> search(String searchParam) {
-        Specification<Ship> specs = (searchParam.matches("^[0-9]+$")) ?
-                Specification.where(lengthLike(Double.parseDouble(searchParam))).or(widthLike(Double.parseDouble(searchParam))).or(codeLike(searchParam)) :
-                Specification.where(nameLike(searchParam)).or(codeLike(searchParam));
+        Specification<Ship> specs = (searchParam.matches("^[0-9]+.[0-9]*$")) ?
+                Specification.where(lengthLike(Double.parseDouble(searchParam)).or(idEqual((long) Double.parseDouble(searchParam)))
+                        .or(widthLike(Double.parseDouble(searchParam))).or(codeLike(searchParam))) :
+                Specification.where(nameLike(searchParam).or(codeLike(searchParam)));
         List<Ship> ships = shipRepository.findAll(specs);
         return ships.stream().map(ship -> mapper.map(ship, ShipDTO.class)).collect(Collectors.toList());
+    }
+
+    private Specification<Ship> idEqual(Long id) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.equal(root.get(Ship_.ID), id);
     }
 
     private Specification<Ship> nameLike(String name) {
