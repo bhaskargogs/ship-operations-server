@@ -17,6 +17,7 @@
 
 package com.operations.ship.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.operations.ship.dto.ShipCreationDTO;
 import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.dto.ShipResponseDTO;
@@ -63,7 +64,6 @@ public class ShipControllerTest {
     public void testCreate_returns201() throws Exception {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(shipController.create(any(ShipCreationDTO.class))).thenReturn(new ResponseEntity<>("Successfully created Ship with Ship ID 1", HttpStatus.CREATED));
-
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ public class ShipControllerTest {
         assertEquals(201, status);
         verify(shipController).create((any(ShipCreationDTO.class)));
         String content = result.getResponse().getContentAsString();
-        assertNotNull(content);
+        assertEquals(content, "Successfully created Ship with Ship ID 1");
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ShipControllerTest {
 
     @Test
     public void testFindById_returns200() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
         when(shipController.findById(1L)).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.OK));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/1")
@@ -101,7 +101,7 @@ public class ShipControllerTest {
         assertEquals(200, status);
         verify(shipController).findById(1L);
         String content = result.getResponse().getContentAsString();
-        assertNotNull(JsonMapper.mapFromJson(content, ShipDTO.class));
+        assertEquals(JsonMapper.mapFromJson(content, ShipDTO.class), shipDTO);
     }
 
     @Test
@@ -135,12 +135,11 @@ public class ShipControllerTest {
         assertEquals(200, status);
         verify(shipController).findAllSorted(1, 1, "asc", "name");
         ShipResponseDTO actual = JsonMapper.mapFromJson(result.getResponse().getContentAsString(), ShipResponseDTO.class);
-        assertNotNull(JsonMapper.mapFromJson(result.getResponse().getContentAsString(), ShipResponseDTO.class));
         assertEquals(actual.getShips(), ships);
     }
 
     @Test
-    public void testFindAllSortByName_Returns200Null() throws Exception {
+    public void testFindAllSortByName_Returns200Empty() throws Exception {
         when(shipController.findAllSorted(1, 1, "asc", "name")).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,6 +150,38 @@ public class ShipControllerTest {
         int status = result.getResponse().getStatus();
         assertEquals(200, status);
         verify(shipController).findAllSorted(1, 1, "asc", "name");
+        assertTrue(StringUtils.isBlank(result.getResponse().getContentAsString()));
+    }
+
+    @Test
+    public void testSearch_Returns200Result() throws Exception {
+        List<ShipDTO> ships = new ArrayList<>();
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2021-01-05T06:45:49.587Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2020-12-25T20:15:02.395Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        when(shipController.search("54")).thenReturn(new ResponseEntity<>(ships, HttpStatus.OK));
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("searchParam", "54")
+                ).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(200, status);
+        verify(shipController).search("54");
+        List<ShipDTO> actual = JsonMapper.mapListFromJson(result.getResponse().getContentAsString(), new TypeReference<List<ShipDTO>>() {});
+        assertEquals(actual, ships);
+    }
+
+    @Test
+    public void testSearch_Returns200Empty() throws Exception {
+        when(shipController.search("54")).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("searchParam", "54")
+        ).andReturn();
+        int status = result.getResponse().getStatus();
+        assertEquals(200, status);
+        verify(shipController).search("54");
         assertTrue(StringUtils.isBlank(result.getResponse().getContentAsString()));
     }
 
@@ -170,7 +201,7 @@ public class ShipControllerTest {
 
     @Test
     public void testUpdate_Returns200() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
         when(shipController.update(any(ShipUpdationDTO.class), eq(1L))).thenReturn(new ResponseEntity<>("Ship with ID " + shipDTO.getId() + " updated successfully", HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/ships/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -180,7 +211,7 @@ public class ShipControllerTest {
         assertEquals(200, status);
         verify(shipController).update(any(ShipUpdationDTO.class), eq(1l));
         String content = result.getResponse().getContentAsString();
-        assertNotNull(content);
+        assertEquals(content, "Ship with ID " + shipDTO.getId() + " updated successfully");
     }
 
     @Test

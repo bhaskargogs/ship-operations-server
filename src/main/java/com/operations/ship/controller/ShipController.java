@@ -45,11 +45,16 @@ public class ShipController {
 
     @GetMapping
     public ResponseEntity<ShipResponseDTO> findAllSorted(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                                       @RequestParam(name = "pageSize", defaultValue = "20") int pageSize,
-                                                       @RequestParam(name = "direction", defaultValue = "asc") String direction,
-                                                       @RequestParam(name = "sort", defaultValue = "id") String sort) {
+                                                         @RequestParam(name = "pageSize", defaultValue = "20") int pageSize,
+                                                         @RequestParam(name = "direction", defaultValue = "asc") String direction,
+                                                         @RequestParam(name = "sort", defaultValue = "id") String sort) {
         ShipResponseDTO shipLists = service.findAll(pageNo, pageSize, direction, sort);
         return new ResponseEntity<>(shipLists, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ShipDTO>> search(@RequestParam(name = "searchParam") String searchParam) {
+        return new ResponseEntity<>(service.search(searchParam.toUpperCase()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

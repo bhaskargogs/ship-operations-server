@@ -22,6 +22,7 @@ import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.exception.InvalidShipException;
 import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.model.Ship;
+import com.operations.ship.model.Ship_;
 import com.operations.ship.repository.ShipRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,10 +32,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -108,6 +111,35 @@ public class ShipService {
         }
         shipRepository.save(shipToUpdate);
         return "Ship with ID " + shipToUpdate.getId() + " updated successfully";
+    }
+
+    @Transactional
+    public List<ShipDTO> search(String searchParam) {
+        Specification<Ship> specs = (searchParam.matches("^[0-9]+$")) ?
+                Specification.where(lengthLike(Double.parseDouble(searchParam))).or(widthLike(Double.parseDouble(searchParam))).or(codeLike(searchParam)) :
+                Specification.where(nameLike(searchParam)).or(codeLike(searchParam));
+        List<Ship> ships = shipRepository.findAll(specs);
+        return ships.stream().map(ship -> mapper.map(ship, ShipDTO.class)).collect(Collectors.toList());
+    }
+
+    private Specification<Ship> nameLike(String name) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.like(root.get(Ship_.NAME), "%" + name + "%");
+    }
+
+    private Specification<Ship> lengthLike(double length) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.equal(root.get(Ship_.LENGTH), length);
+    }
+
+    private Specification<Ship> widthLike(double width) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.equal(root.get(Ship_.WIDTH), width);
+    }
+
+    private Specification<Ship> codeLike(String code) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.like(root.get(Ship_.CODE), "%" + code + "%");
     }
 
     private static Ship findById(ShipRepository repository, Long id) {

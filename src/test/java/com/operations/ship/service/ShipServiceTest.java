@@ -62,6 +62,21 @@ public class ShipServiceTest {
     }
 
     @Test
+    public void testSearch_ReturnsList() {
+        List<ShipDTO> ships = new ArrayList<>();
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
+        when(service.search("54")).thenReturn(ships);
+        assertEquals(ships, service.search("54"));
+    }
+    @Test
+    public void testSearch_ReturnsNull() {
+        List<ShipDTO> ships = new ArrayList<>();
+        lenient().when(service.search("ZZ")).thenReturn(ships);
+        assertTrue(service.search("54").isEmpty());
+    }
+
+    @Test
     public void testFindById_ThrowException() {
         ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(service.findById(2L)).thenThrow(ShipNotFoundException.class);
@@ -76,14 +91,14 @@ public class ShipServiceTest {
         ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
         shipResponseDTO.setShips(ships);
         shipResponseDTO.setTotalShips((long) ships.size());
-        when(service.findAll(1, 1, "ASC", "name")).thenReturn(shipResponseDTO);
-        assertEquals(shipResponseDTO, service.findAll(1, 1, "ASC", "name"));
+        when(service.findAll(1, 1, "asc", "name")).thenReturn(shipResponseDTO);
+        assertEquals(shipResponseDTO, service.findAll(1, 1, "asc", "name"));
     }
 
     @Test
     public void testFindAllSortByName_ReturnNull() {
-        when(service.findAll(1, 1, "ASC", "name")).thenReturn(null);
-        assertNull(service.findAll(1, 1, "ASC", "name"));
+        when(service.findAll(1, 1, "asc", "name")).thenReturn(null);
+        assertNull(service.findAll(1, 1, "asc", "name"));
     }
 
     @Test
