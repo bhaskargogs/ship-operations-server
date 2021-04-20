@@ -24,7 +24,6 @@ import com.operations.ship.exception.ShipNotFoundException;
 import com.operations.ship.model.Ship;
 import com.operations.ship.model.Ship_;
 import com.operations.ship.repository.ShipRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class ShipService {
 
