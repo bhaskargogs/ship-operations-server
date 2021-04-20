@@ -3,28 +3,30 @@ package com.operations.ship.cucumber.steps;
 import com.operations.ship.cucumber.entity.ShipEntity;
 import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.dto.ShipUpdationDTO;
+import com.operations.ship.util.JsonMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FindUpdateAndDeleteShipStepDefinition {
+public class FindUpdateAndDeleteValidShipStepDefinition {
     private ShipEntity shipEntity = new ShipEntity();
-
     private HttpResponse response;
-
+    private HttpResponse<JsonNode> jsonResponse;
     ShipDTO shipDTO;
 
     int status;
 
     @Given("the user looks for ship with id {long}")
     public void userLooksForShip(Long id) throws IOException {
-        shipDTO = shipEntity.findShipById(id);
+        jsonResponse = shipEntity.findShipById(id);
+        shipDTO = JsonMapper.mapFromJson(jsonResponse.getBody().getObject().toString(), ShipDTO.class);
     }
 
     @When("the user gets the ship")
@@ -52,7 +54,8 @@ public class FindUpdateAndDeleteShipStepDefinition {
 
     @Given("A user having a ship with id {long}")
     public void userHavingShip(Long id) throws IOException {
-        shipDTO = shipEntity.findShipById(id);
+        jsonResponse = shipEntity.findShipById(id);
+        shipDTO = JsonMapper.mapFromJson(jsonResponse.getBody().getObject().toString(), ShipDTO.class);
     }
 
     @When("the user gets the valid ship")

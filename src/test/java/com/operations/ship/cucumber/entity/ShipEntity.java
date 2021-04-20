@@ -6,6 +6,7 @@ import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.dto.ShipUpdationDTO;
 import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,12 +29,12 @@ public class ShipEntity {
     private ZonedDateTime createdDate;
     private ZonedDateTime updatedDate;
 
-    public ShipDTO findShipById(long id) throws IOException {
-        ShipDTO shipDTO = ShipClient.findById(id);
-        if (shipDTO != null) {
-            log.info("Ship found: " + shipDTO );
-        }
-        return shipDTO;
+    public HttpResponse<JsonNode> findShipById(long id) throws IOException {
+        return ShipClient.findById(id);
+    }
+
+    public HttpResponse<JsonNode> searchShips(String searchParam) throws IOException {
+        return ShipClient.searchShips(searchParam);
     }
 
     public List<ShipDTO> findShipLists(int pageNo, int pageSize, String direction, String sortField) throws IOException {
