@@ -50,7 +50,9 @@ Swagger runs at [http://localhost:8080/swagger-ui.html](http://localhost:8080/sw
 Unit tests are done using JUNit and Mockito, while Cucumber is used for integration testing 
 and it generates a nice report.
 
-Run the following command to do testing and generate cucumber reports:
+Note: Please don't stop the deployment
+
+Run the following command to do testing and generate cucumber reports **(in another terminal/command prompt window)**:
 ```shell
 mvn test verify
 ```
