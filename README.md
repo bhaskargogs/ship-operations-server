@@ -28,6 +28,23 @@ To start the application, simply run the following command:
 mvn spring-boot:run
 ```
 
+The server runs at [http://localhost:8080](http://localhost:8080)
+
+# H2 Database
+
+H2 database runs at [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+```shell
+JDBC URL: jdbc:h2:mem:shipdb
+username: admin
+password: admin
+```
+
+# Swagger
+
+Swagger runs at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+![swagger-ui](images/swagger-ui.png)
+
 # Testing and Reporting
 
 Unit tests are done using JUNit and Mockito, while Cucumber is used for integration testing 
