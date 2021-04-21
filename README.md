@@ -28,15 +28,21 @@ To start the application, simply run the following command:
 mvn spring-boot:run
 ```
 
-# Testing
+# Testing and Reporting
 
-## Unit and Integration testing
+Unit tests are done using JUNit and Mockito, while Cucumber is used for integration testing 
+and it generates a nice report.
 
-Note:
-
-Please use the following command to run testing (Includes unit and integration)
+Run the following command to do testing and generate cucumber reports:
 ```shell
-mvn clean test
+mvn test verify
 ```
 
+To look for the report simply go to `reports/html-reports/cucumber-html-reports` folder
 
+`overview-features` shows you the following graph.
+
+![cucumber-report](images/cucumber-report.png)
+
+# License
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
