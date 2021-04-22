@@ -115,8 +115,8 @@ public class ShipService {
     public List<ShipDTO> search(String searchParam) {
         Specification<Ship> specs = (searchParam.matches("^[0-9]+.[0-9]*$")) ?
                 Specification.where(lengthLike(Double.parseDouble(searchParam)).or(idEqual((long) Double.parseDouble(searchParam)))
-                        .or(widthLike(Double.parseDouble(searchParam))).or(codeLike(searchParam))) :
-                Specification.where(nameLike(searchParam).or(codeLike(searchParam)));
+                        .or(widthLike(Double.parseDouble(searchParam))).or(codeLike(searchParam.toUpperCase()))) :
+                Specification.where(nameLike(searchParam).or(codeLike(searchParam.toUpperCase())));
         List<Ship> ships = shipRepository.findAll(specs);
         return ships.stream().map(ship -> mapper.map(ship, ShipDTO.class)).collect(Collectors.toList());
     }
