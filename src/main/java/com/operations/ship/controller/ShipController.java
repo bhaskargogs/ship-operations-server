@@ -54,7 +54,7 @@ public class ShipController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ShipDTO>> search(@RequestParam(name = "searchParam") String searchParam) {
-        return new ResponseEntity<>(service.search(searchParam.toUpperCase()), HttpStatus.OK);
+        return new ResponseEntity<>(service.search(searchParam), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
