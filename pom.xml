@@ -15,7 +15,7 @@
 	<description>Demo project to perform CRUD operations on a ship in Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
-		<slf4j.version>1.7.26</slf4j.version>
+		<slf4j.version>1.7.29</slf4j.version>
 		<modelmapper.version>2.3.6</modelmapper.version>
 		<jackson.version>2.11.4</jackson.version>
 		<swagger.version>2.9.2</swagger.version>
