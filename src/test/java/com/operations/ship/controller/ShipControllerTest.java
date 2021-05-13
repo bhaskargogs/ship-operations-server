@@ -40,12 +40,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +61,7 @@ public class ShipControllerTest {
 
     @Test
     public void testCreate_returns201() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1");
         when(shipController.create(any(ShipCreationDTO.class))).thenReturn(new ResponseEntity<>("Successfully created Ship with Ship ID 1", HttpStatus.CREATED));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +76,7 @@ public class ShipControllerTest {
 
     @Test
     public void testCreate_returns400() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "ABC-011-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "ABC-011-A1");
         when(shipController.create(any(ShipCreationDTO.class))).thenThrow(InvalidShipException.class);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ships")
@@ -91,7 +90,7 @@ public class ShipControllerTest {
 
     @Test
     public void testFindById_returns200() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1");
         when(shipController.findById(1L)).thenReturn(new ResponseEntity<>(shipDTO, HttpStatus.OK));
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/1")
@@ -106,7 +105,7 @@ public class ShipControllerTest {
 
     @Test
     public void testFindById_returns404() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1");
         when(shipController.findById(2L)).thenThrow(ShipNotFoundException.class);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/2")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -119,8 +118,8 @@ public class ShipControllerTest {
     @Test
     public void testFindAllSortByName_Returns200Result() throws Exception {
         List<ShipDTO> ships = new ArrayList<>();
-        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2021-01-05T06:45:49.587Z").withZoneSameInstant(ZoneId.of("UTC"))));
-        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2020-12-25T20:15:02.395Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1"));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1"));
         ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
         shipResponseDTO.setShips(ships);
         shipResponseDTO.setTotalShips((long) ships.size());
@@ -156,18 +155,19 @@ public class ShipControllerTest {
     @Test
     public void testSearch_Returns200Result() throws Exception {
         List<ShipDTO> ships = new ArrayList<>();
-        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2021-01-05T06:45:49.587Z").withZoneSameInstant(ZoneId.of("UTC"))));
-        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z").withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.parse("2020-12-25T20:15:02.395Z").withZoneSameInstant(ZoneId.of("UTC"))));
+        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1"));
+        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1"));
         when(shipController.search("54")).thenReturn(new ResponseEntity<>(ships, HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/ships/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("searchParam", "54")
-                ).andReturn();
+        ).andReturn();
         int status = result.getResponse().getStatus();
         assertEquals(200, status);
         verify(shipController).search("54");
-        List<ShipDTO> actual = JsonMapper.mapListFromJson(result.getResponse().getContentAsString(), new TypeReference<List<ShipDTO>>() {});
+        List<ShipDTO> actual = JsonMapper.mapListFromJson(result.getResponse().getContentAsString(), new TypeReference<List<ShipDTO>>() {
+        });
         assertEquals(actual, ships);
     }
 
@@ -201,7 +201,7 @@ public class ShipControllerTest {
 
     @Test
     public void testUpdate_Returns200() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")), ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
+        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1");
         when(shipController.update(any(ShipUpdationDTO.class), eq(1L))).thenReturn(new ResponseEntity<>("Ship with ID " + shipDTO.getId() + " updated successfully", HttpStatus.OK));
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/ships/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ public class ShipControllerTest {
 
     @Test
     public void testUpdate_Returns404() throws Exception {
-        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
+        ShipDTO shipDTO = new ShipDTO(1L, "Zaloni", 2015.23, 565.24, "AAAA-0001-A1");
         when(shipController.update(any(ShipUpdationDTO.class), eq(2L))).thenThrow(ShipNotFoundException.class);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/ships/2")
                 .contentType(MediaType.APPLICATION_JSON)

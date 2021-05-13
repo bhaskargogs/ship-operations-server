@@ -41,10 +41,10 @@ public class Ship implements Serializable {
     private String code;
 
     @Column(name = "created_date")
-    private ZonedDateTime createdDate;
+    private ZonedDateTime createdDate = ZonedDateTime.now();
 
     @Column(name = "updated_date")
-    private ZonedDateTime updatedDate;
+    private ZonedDateTime updatedDate = ZonedDateTime.now();
 
     private Ship() {
 

@@ -49,9 +49,6 @@ public class ShipUpdationDTO {
     @NotBlank(message = "Code is mandatory")
     private String code;
 
-    @JsonIgnore
-    private final ZonedDateTime updatedDate = ZonedDateTime.now();
-
     public ShipUpdationDTO(Long id, String name, double length, double width, String code) {
         this.id = id;
         this.name = name;
@@ -70,7 +67,6 @@ public class ShipUpdationDTO {
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
             shipDTO.setCode(requestDTO.getCode());
         }
-        shipDTO.setUpdatedDate(requestDTO.getUpdatedDate());
         return shipDTO;
 
     }

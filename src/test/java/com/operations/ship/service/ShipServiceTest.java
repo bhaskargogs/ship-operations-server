@@ -22,12 +22,12 @@ import com.operations.ship.dto.ShipDTO;
 import com.operations.ship.dto.ShipResponseDTO;
 import com.operations.ship.exception.InvalidShipException;
 import com.operations.ship.exception.ShipNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,57 +40,57 @@ public class ShipServiceTest {
     @Mock
     private ShipService service;
 
+    ShipDTO shipDTO1;
+    ShipDTO shipDTO2;
+    ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
+    List<ShipDTO> ships = new ArrayList<>();
+
+    @BeforeEach
+    public void setUp() {
+        shipDTO1 = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1");
+        shipDTO2 = new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1");
+        ships.add(shipDTO1);
+        ships.add(shipDTO2);
+        shipResponseDTO.setShips(ships);
+        shipResponseDTO.setTotalShips((long) ships.size());
+    }
+
     @Test
     public void testCreate_ValidInput() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.create(shipDTO)).thenReturn("Successfully created ship with Ship ID" + shipDTO.getId());
-        assertEquals("Successfully created ship with Ship ID" + shipDTO.getId(), service.create(shipDTO));
+        when(service.create(shipDTO1)).thenReturn("Successfully created ship with Ship ID" + shipDTO1.getId());
+        assertEquals("Successfully created ship with Ship ID" + shipDTO1.getId(), service.create(shipDTO1));
     }
 
     @Test
     public void testCreate_ThrowException() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "A123-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.create(shipDTO)).thenThrow(InvalidShipException.class);
-        assertThrows(InvalidShipException.class, () -> service.create(shipDTO));
+        when(service.create(shipDTO1)).thenThrow(InvalidShipException.class);
+        assertThrows(InvalidShipException.class, () -> service.create(shipDTO1));
     }
 
     @Test
     public void testFindById_ValidInput() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when((service.findById(1L))).thenReturn(shipDTO);
-        assertEquals(shipDTO, service.findById(1L));
+        when((service.findById(1L))).thenReturn(shipDTO1);
+        assertEquals(shipDTO1, service.findById(1L));
     }
 
     @Test
     public void testSearch_ReturnsList() {
-        List<ShipDTO> ships = new ArrayList<>();
-        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
-        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
         when(service.search("54")).thenReturn(ships);
         assertEquals(ships, service.search("54"));
     }
     @Test
     public void testSearch_ReturnsNull() {
-        List<ShipDTO> ships = new ArrayList<>();
-        lenient().when(service.search("ZZ")).thenReturn(ships);
         assertTrue(service.search("54").isEmpty());
     }
 
     @Test
     public void testFindById_ThrowException() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         when(service.findById(2L)).thenThrow(ShipNotFoundException.class);
-        assertThrows(ShipNotFoundException.class, () -> service.findById(2l));
+        assertThrows(ShipNotFoundException.class, () -> service.findById(2L));
     }
 
     @Test
     public void testFindAllSortByName_ReturnsResult() {
-        List<ShipDTO> ships = new ArrayList<>();
-        ships.add(new ShipDTO(1L, "Illustria", 2154.24, 565.21, "AAAA-0021-A1", ZonedDateTime.parse("2020-10-15T18:30:49.665Z"), ZonedDateTime.parse("2021-01-05T06:45:49.587Z")));
-        ships.add(new ShipDTO(2L, "Pascal Magi", 3254.24, 1565.21, "ABBA-0121-A1", ZonedDateTime.parse("2020-12-17T10:41:35.225Z"), ZonedDateTime.parse("2020-12-25T20:15:02.395Z")));
-        ShipResponseDTO shipResponseDTO = new ShipResponseDTO();
-        shipResponseDTO.setShips(ships);
-        shipResponseDTO.setTotalShips((long) ships.size());
         when(service.findAll(1, 1, "asc", "name")).thenReturn(shipResponseDTO);
         assertEquals(shipResponseDTO, service.findAll(1, 1, "asc", "name"));
     }
@@ -103,7 +103,6 @@ public class ShipServiceTest {
 
     @Test
     public void testDelete_DeletesSuccessfully() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
         service.delete(1L);
         verify(service, times(1)).delete(1L);
     }
@@ -116,15 +115,13 @@ public class ShipServiceTest {
 
     @Test
     public void testUpdate_UpdateSuccessfully() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.update(shipDTO, 1L)).thenReturn("Ship with ID " + shipDTO.getId() + " updated successfully");
-        assertEquals("Ship with ID " + shipDTO.getId() + " updated successfully", service.update(shipDTO, 1L));
+        when(service.update(shipDTO1, 1L)).thenReturn("Ship with ID " + shipDTO1.getId() + " updated successfully");
+        assertEquals("Ship with ID " + shipDTO1.getId() + " updated successfully", service.update(shipDTO1, 1L));
     }
 
     @Test
     public void testUpdate_ThrowException() {
-        ShipDTO shipDTO = new ShipDTO(1L, "Bermuda", 2015.23, 565.24, "AAAA-0001-A1", ZonedDateTime.now(), ZonedDateTime.now());
-        when(service.update(shipDTO, 2L)).thenThrow(ShipNotFoundException.class);
-        assertThrows(ShipNotFoundException.class, () -> service.update(shipDTO, 2L));
+        when(service.update(shipDTO1, 2L)).thenThrow(ShipNotFoundException.class);
+        assertThrows(ShipNotFoundException.class, () -> service.update(shipDTO1, 2L));
     }
 }

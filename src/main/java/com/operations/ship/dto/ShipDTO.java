@@ -34,8 +34,5 @@ public class ShipDTO implements Serializable {
     private double length;
     private double width;
     private String code;
-    private ZonedDateTime createdDate;
-    private ZonedDateTime updatedDate;
-
 
 }

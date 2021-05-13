@@ -35,6 +35,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,9 +105,7 @@ public class ShipService {
         if (StringUtils.isNotBlank(updatedShipDTO.getCode())) {
             shipToUpdate.setCode(updatedShipDTO.getCode());
         }
-        if (updatedShipDTO.getUpdatedDate() != null) {
-            shipToUpdate.setUpdatedDate(updatedShipDTO.getUpdatedDate());
-        }
+        shipToUpdate.setUpdatedDate(ZonedDateTime.now());
         shipRepository.save(shipToUpdate);
         return "Ship with ID " + shipToUpdate.getId() + " updated successfully";
     }
